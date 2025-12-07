@@ -5,7 +5,6 @@
 A powerful OCR application that can extract text and tables from images and PDFs with a beautiful modern interface.
 
 ---
-<img width="1917" height="912" alt="image" src="https://github.com/user-attachments/assets/b1b4dfd7-068d-4e4c-9bff-d14960fb650b" />
 
 ## ✨ Features
 
@@ -67,7 +66,6 @@ brew install poppler
 ```
 
 ### 2️⃣ Project Setup
-
 ```bash
 # Clone/Download করুন project
 cd "Image Scanner OCR"
@@ -96,7 +94,6 @@ pip install -r requirements.txt
 ### 3️⃣ Configuration
 
 `main.py` file এ Tesseract path check করুন:
-
 ```python
 # Windows
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -106,7 +103,6 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 ```
 
 ### 4️⃣ Run Server
-
 ```bash
 # Method 1: Python দিয়ে
 python main.py
@@ -133,7 +129,6 @@ http://localhost:8000/docs
 ---
 
 ## 📁 Project Structure
-
 ```
 Image Scanner OCR/
 │
@@ -231,7 +226,6 @@ ALLOWED_PDF_TYPES = {"application/pdf"}
 
 ### OCR Language
 `image_processing.py` এবং `pdf_processing.py` তে:
-
 ```python
 # English only (default)
 text = pytesseract.image_to_string(image, lang='eng')
@@ -274,9 +268,9 @@ pip install pdf2image
 **Solution:**
 1. Poppler install করুন (Prerequisites section দেখুন)
 2. PATH এ add করা আছে কিনা verify করুন:
-   ```bash
+```bash
    pdfinfo -v
-   ```
+```
 3. Terminal/Command Prompt restart করুন
 4. Server restart করুন
 
@@ -306,7 +300,6 @@ venv\Scripts\Activate.ps1
 ---
 
 ## 📦 Dependencies
-
 ```
 fastapi==0.104.1           # Web framework
 uvicorn==0.24.0           # ASGI server
@@ -460,6 +453,7 @@ Created with ❤️ for easy OCR processing
 - [OpenCV Documentation](https://docs.opencv.org/)
 
 ---
+<img width="1310" height="647" alt="image" src="https://github.com/user-attachments/assets/695585de-e2a1-482d-b6d4-b79aa22b7cee" />
 
 ## 📞 Support
 
