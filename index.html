@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .upload-box {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8f9ff;
+        }
+
+        .upload-box:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .upload-box.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .upload-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .upload-box p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+            margin-top: 40px;
+        }
+
+        .result-section {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .result-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .text-result {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .table-container {
+            margin-bottom: 20px;
+        }
+
+        .table-info {
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+        }
+
+        .table-content {
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .table-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success-info {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 OCR Application</h1>
+            <p>Extract text and tables from images and PDFs</p>
+        </div>
+
+        <div class="content">
+            <div class="upload-section">
+                <div class="upload-box" id="imageUploadBox">
+                    <div class="upload-icon">🖼️</div>
+                    <h3>Upload Image</h3>
+                    <p>Drag & drop or click to select<br>Supported: JPG, PNG, TIFF, BMP</p>
+                    <input type="file" id="imageInput" class="file-input" accept="image/*">
+                    <button class="btn" onclick="document.getElementById('imageInput').click()">Choose Image</button>
+                </div>
+
+                <div class="upload-box" id="pdfUploadBox">
+                    <div class="upload-icon">📑</div>
+                    <h3>Upload PDF</h3>
+                    <p>Drag & drop or click to select<br>Supported: PDF files</p>
+                    <input type="file" id="pdfInput" class="file-input" accept="application/pdf">
+                    <button class="btn" onclick="document.getElementById('pdfInput').click()">Choose PDF</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your file... This may take a moment.</p>
+            </div>
+
+            <div class="results" id="results">
+                <div id="successInfo"></div>
+                
+                <div class="result-section">
+                    <h3>📝 Extracted Text</h3>
+                    <div class="text-result" id="textResult"></div>
+                </div>
+
+                <div class="result-section" id="tablesSection" style="display: none;">
+                    <h3>📊 Detected Tables</h3>
+                    <div id="tablesResult"></div>
+                </div>
+            </div>
+
+            <div id="errorMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '';
+
+        // Image upload handling
+        const imageInput = document.getElementById('imageInput');
+        const imageUploadBox = document.getElementById('imageUploadBox');
+
+        imageInput.addEventListener('change', (e) => handleFileUpload(e.target.files[0], 'image'));
+        
+        imageUploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadBox.classList.add('dragover');
+        });
+
+        imageUploadBox.addEventListener('dragleave', () => {
+            imageUploadBox.classList.remove('dragover');
+        });
+
+        imageUploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadBox.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFileUpload(file, 'image');
+            }
+        });
+
+        // PDF upload handling
+        const pdfInput = document.getElementById('pdfInput');
+        const pdfUploadBox = document.getElementById('pdfUploadBox');
+
+        pdfInput.addEventListener('change', (e) => handleFileUpload(e.target.files[0], 'pdf'));
+        
+        pdfUploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            pdfUploadBox.classList.add('dragover');
+        });
+
+        pdfUploadBox.addEventListener('dragleave', () => {
+            pdfUploadBox.classList.remove('dragover');
+        });
+
+        pdfUploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            pdfUploadBox.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                handleFileUpload(file, 'pdf');
+            }
+        });
+
+        async function handleFileUpload(file, type) {
+            if (!file) return;
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Reset UI
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            errorMessage.innerHTML = '';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const endpoint = type === 'image' ? '/ocr-image/' : '/ocr-pdf/';
+
+            try {
+                const response = await fetch(API_URL + endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Upload failed');
+                }
+
+                const data = await response.json();
+                displayResults(data);
+
+            } catch (error) {
+                errorMessage.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            const results = document.getElementById('results');
+            const textResult = document.getElementById('textResult');
+            const tablesResult = document.getElementById('tablesResult');
+            const tablesSection = document.getElementById('tablesSection');
+            const successInfo = document.getElementById('successInfo');
+
+            // Show success info
+            successInfo.innerHTML = `
+                <div class="success-info">
+                    ✅ Processing completed!<br>
+                    File: ${data.filename || 'Unknown'}<br>
+                    Text length: ${data.text_length || 0} characters<br>
+                    Tables found: ${data.table_count || 0}
+                </div>
+            `;
+
+            // Display text
+            textResult.textContent = data.text || 'No text extracted';
+
+            // Display tables
+            if (data.tables && data.tables.length > 0) {
+                tablesSection.style.display = 'block';
+                tablesResult.innerHTML = '';
+
+                data.tables.forEach((table, index) => {
+                    const tableDiv = document.createElement('div');
+                    tableDiv.className = 'table-container';
+                    
+                    const pageInfo = table.page ? ` - Page ${table.page}` : '';
+                    tableDiv.innerHTML = `
+                        <div class="table-info">Table ${index + 1}${pageInfo}</div>
+                        <div class="table-content">
+                            ${table.rows.map(row => `<div class="table-row">${row}</div>`).join('')}
+                        </div>
+                    `;
+                    
+                    tablesResult.appendChild(tableDiv);
+                });
+            } else {
+                tablesSection.style.display = 'none';
+            }
+
+            results.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
