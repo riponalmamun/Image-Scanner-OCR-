@@ -5,6 +5,7 @@
 A powerful OCR application that can extract text and tables from images and PDFs with a beautiful modern interface.
 
 ---
+<img width="1310" height="647" alt="image" src="https://github.com/user-attachments/assets/01a63b5e-50f0-499b-bc24-6527a9e15fb7" />
 
 ## ✨ Features
 
